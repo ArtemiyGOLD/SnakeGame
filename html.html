@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f8ff;
+        }
+
+        canvas {
+            display: block;
+            border: 2px solid black;
+            background-size: cover;
+        }
+
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <label for="speed">Скорость змейки:</label>
+        <input type="number" id="speed" min="1" max="10" value="5">
+
+        <label for="coins">Минимальное количество монет:</label>
+        <input type="number" id="coins" min="1" max="50" value="5">
+
+        <label for="size">Размер игрового поля (в пикселях):</label>
+        <input type="number" id="size" min="200" max="800" value="250">
+
+        <button onclick="startGame()">Начать игру</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        let canvas, ctx, speed, minCoins, gameSize, snake, direction, coins, coinImage, backgroundImage;
+
+        function startGame() {
+            speed = parseInt(document.getElementById('speed').value);
+            minCoins = parseInt(document.getElementById('coins').value);
+            gameSize = parseInt(document.getElementById('size').value);
+
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+
+            canvas.width = gameSize;
+            canvas.height = gameSize;
+            canvas.style.display = 'block';
+
+            document.getElementById('menu').style.display = 'none';
+
+            // Загрузка изображений
+            coinImage = new Image();
+            coinImage.src = 'photo/coin.png'; // Убедитесь, что файл существует
+            backgroundImage = new Image();
+            backgroundImage.src = 'photo/background.jpg'; // Убедитесь, что файл существует
+
+            // Проверяем, загружены ли изображения
+            let imagesLoaded = 0;
+            coinImage.onload = backgroundImage.onload = () => {
+                imagesLoaded++;
+                if (imagesLoaded === 2) {
+                    // Если оба изображения загружены, запускаем игру
+                    initGame();
+                }
+            };
+
+            coinImage.onerror = backgroundImage.onerror = () => {
+                alert('Ошибка загрузки изображений. Проверьте файлы coin.png и background.jpg.');
+            };
+        }
+
+        function initGame() {
+            snake = [{ x: 150, y: 150 }];
+            direction = 'RIGHT'; // Начальное направление змейки
+            coins = generateCoins(snake);
+
+            document.addEventListener('keydown', changeDirection);
+
+            gameLoop();
+        }
+
+        function gameLoop() {
+            setTimeout(() => {
+                updateGame();
+                drawGame();
+                gameLoop();
+            }, 1000 / speed);
+        }
+
+        function generateCoins(snake) {
+            let coins = [];
+            for (let i = 0; i < minCoins; i++) {
+                coins.push(generateCoin(snake));
+            }
+            return coins;
+        }
+
+        function generateCoin(snake) {
+            let coin;
+            do {
+                coin = {
+                    x: Math.floor(Math.random() * (canvas.width / 10)) * 10,
+                    y: Math.floor(Math.random() * (canvas.height / 10)) * 10
+                };
+            } while (snake.some(segment => segment.x === coin.x && segment.y === coin.y));
+            return coin;
+        }
+
+        function changeDirection(event) {
+            const key = event.key;
+
+            if (key === 'ArrowUp' && direction !== 'DOWN') {
+                direction = 'UP';
+            } else if (key === 'ArrowDown' && direction !== 'UP') {
+                direction = 'DOWN';
+            } else if (key === 'ArrowLeft' && direction !== 'RIGHT') {
+                direction = 'LEFT';
+            } else if (key === 'ArrowRight' && direction !== 'LEFT') {
+                direction = 'RIGHT';
+            }
+        }
+
+        function updateGame() {
+            const head = { ...snake[0] };
+            if (direction === 'UP') head.y -= 10;
+            if (direction === 'DOWN') head.y += 10;
+            if (direction === 'LEFT') head.x -= 10;
+            if (direction === 'RIGHT') head.x += 10;
+
+            if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
+                alert('Игра окончена! Вы врезались в стену.');
+                location.reload();
+            }
+
+            if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                alert('Игра окончена! Змейка столкнулась с собой.');
+                location.reload();
+            }
+
+            snake.unshift(head);
+
+            const coinIndex = coins.findIndex(coin => coin.x === head.x && coin.y === head.y);
+            if (coinIndex !== -1) {
+                coins.splice(coinIndex, 1);
+                coins.push(generateCoin(snake));
+            } else {
+                snake.pop();
+            }
+        }
+
+        function drawGame() {
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? 'green' : 'lightgreen';
+                ctx.fillRect(segment.x, segment.y, 10, 10);
+            });
+
+            coins.forEach(coin => {
+                ctx.drawImage(coinImage, coin.x, coin.y, 10, 10);
+            });
+        }
+    </script>
+</body>
+</html>
