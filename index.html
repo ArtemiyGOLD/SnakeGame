@@ -7,8 +7,9 @@
     <style>
         body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
             background-color: #f0f8ff;
@@ -18,6 +19,8 @@
             display: block;
             border: 2px solid black;
             background-size: cover;
+            max-width: 100%;
+            height: auto;
         }
 
         #menu {
@@ -32,23 +35,41 @@
             font-size: 16px;
             cursor: pointer;
         }
+
+        #controls {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <div id="menu">
         <label for="speed">Скорость змейки:</label>
         <input type="number" id="speed" min="1" max="10" value="5">
-
         <label for="coins">Минимальное количество монет:</label>
         <input type="number" id="coins" min="1" max="50" value="5">
-
         <label for="size">Размер игрового поля (в пикселях):</label>
         <input type="number" id="size" min="200" max="800" value="250">
-
         <button onclick="startGame()">Начать игру</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
+
+    <div id="controls">
+        <button class="control-btn" onclick="moveSnake('UP')">&#8593;</button>
+        <button class="control-btn" onclick="moveSnake('LEFT')">&#8592;</button>
+        <button class="control-btn" onclick="moveSnake('RIGHT')">&#8594;</button>
+        <button class="control-btn" onclick="moveSnake('DOWN')">&#8595;</button>
+    </div>
 
     <script>
         let canvas, ctx, speed, minCoins, gameSize, snake, direction, coins, coinImage, backgroundImage;
@@ -67,18 +88,15 @@
 
             document.getElementById('menu').style.display = 'none';
 
-            // Загрузка изображений
             coinImage = new Image();
-            coinImage.src = 'photo/coin.png'; // Убедитесь, что файл существует
+            coinImage.src = 'photo/coin.png';
             backgroundImage = new Image();
-            backgroundImage.src = 'photo/background.jpg'; // Убедитесь, что файл существует
+            backgroundImage.src = 'photo/background.jpg';
 
-            // Проверяем, загружены ли изображения
             let imagesLoaded = 0;
             coinImage.onload = backgroundImage.onload = () => {
                 imagesLoaded++;
                 if (imagesLoaded === 2) {
-                    // Если оба изображения загружены, запускаем игру
                     initGame();
                 }
             };
@@ -90,7 +108,7 @@
 
         function initGame() {
             snake = [{ x: 150, y: 150 }];
-            direction = 'RIGHT'; // Начальное направление змейки
+            direction = 'RIGHT';
             coins = generateCoins(snake);
 
             document.addEventListener('keydown', changeDirection);
@@ -179,6 +197,14 @@
                 ctx.drawImage(coinImage, coin.x, coin.y, 10, 10);
             });
         }
+
+        function moveSnake(newDirection) {
+            if (newDirection === 'UP' && direction !== 'DOWN') direction = 'UP';
+            if (newDirection === 'DOWN' && direction !== 'UP') direction = 'DOWN';
+            if (newDirection === 'LEFT' && direction !== 'RIGHT') direction = 'LEFT';
+            if (newDirection === 'RIGHT' && direction !== 'LEFT') direction = 'RIGHT';
+        }
     </script>
 </body>
 </html>
+ ghbd
