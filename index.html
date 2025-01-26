@@ -1,210 +1,479 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake_Game</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f8ff;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YokiToki</title>
+    <link rel="stylesheet" href="styles\style.css" />
+    <link rel="stylesheet" href="styles\cart.css" />
+  </head>
+  <body>
+    <header class="header">
+      <!-- Кнопка корзины -->
+      <button id="cartButton">
+        <img src="images/icons/basket.png" class="imgButton" />
+      </button>
 
-        canvas {
-            display: block;
-            border: 2px solid black;
-            background-size: cover;
-            max-width: 100%;
-            height: auto;
-        }
+      <img src="images/mainImages/logo.jpg" class="logo" />
+      <button id="menuButton">
+        <img src="images/icons/menu.png" class="imgButton" id="menuIcon" />
+      </button>
+    </header>
 
-        #menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
+    <div id="cartOverlay" class="overlay"></div>
+    <!-- Оверлей для затемнения фона -->
+    <div class="overlay" id="overlay"></div>
 
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    <!-- Боковое меню -->
+    <aside class="sidebar" id="sidebar">
+      <nav>
+        <ul>
+          <li><a href="#">О нас</a></li>
+          <li><a href="#">Работа</a></li>
+          <li><a href="#">Калорийность и состав</a></li>
+          <li><a href="#">Контакты</a></li>
+          <li><a href="#">Франшиза</a></li>
+        </ul>
+      </nav>
+    </aside>
 
-        #controls {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            max-width: 400px;
-            margin-top: 10px;
-        }
-
-        .control-btn {
-            width: 60px;
-            height: 60px;
-            font-size: 18px;
-        }
-    </style>
-</head>
-<body>
-    <div id="menu">
-        <label for="speed">Скорость змейки:</label>
-        <input type="number" id="speed" min="1" max="10" value="5">
-        <label for="coins">Минимальное количество монет:</label>
-        <input type="number" id="coins" min="1" max="50" value="5">
-        <label for="size">Размер игрового поля (в пикселях):</label>
-        <input type="number" id="size" min="200" max="800" value="250">
-        <button onclick="startGame()">Начать игру</button>
+    <!-- Боковая панель корзины -->
+    <div id="cartSidebar" class="cart-sidebar">
+      <div class="cart-header">
+        <h2>Корзина</h2>
+        <p class="cart-summary">Итого: <span id="cartTotal">0₽</span></p>
+      </div>
+      <div class="cart-content">
+        <div id="cartItems" class="cart-items"></div>
+        <div id="emptyCart" class="empty-cart">
+          <h3>Корзина пуста</h3>
+          <p>Добавьте товары из меню</p>
+        </div>
+      </div>
+      <!-- Футер с кнопкой "Перейти к оформлению" -->
+      <div class="checkout-footer">
+        <button class="checkout-button">Перейти к оформлению</button>
+      </div>
     </div>
 
-    <canvas id="gameCanvas"></canvas>
+    <main>
+      <div class="title" style="margin-right: 12px">
+        <h2>Популярное</h2>
+      </div>
+      <section class="carouselPopular">
+        <div class="carousel-container">
+          <div class="popularBlock">
+            <img src="images/mainImages/tomYum.jpg" />
+            <div>
+              <h2>Том-ям с курицей</h2>
+              <div class="priceBlock">
+                <h3 class="price">269₽</h3>
+                <p>470 г</p>
+              </div>
+              <p class="description">
+                Паста том ям, куринная грудка, грибы шампиньоны, помидор, рис
+              </p>
+            </div>
+            <button class="add-to-cart"><h4>В корзину</h4></button>
+          </div>
 
-    <div id="controls">
-        <button class="control-btn" onclick="moveSnake('UP')">&#8593;</button>
-        <button class="control-btn" onclick="moveSnake('LEFT')">&#8592;</button>
-        <button class="control-btn" onclick="moveSnake('RIGHT')">&#8594;</button>
-        <button class="control-btn" onclick="moveSnake('DOWN')">&#8595;</button>
-    </div>
+          <div class="popularBlock">
+            <img src="images/mainImages/Tonkacy.jpg" style="height: 54%" />
+            <div>
+              <h2>Курица Тонкацу</h2>
+              <div class="priceBlock">
+                <h3 class="price">279₽</h3>
+                <p>230 г</p>
+              </div>
+              <p class="description">
+                Куриная отбивная, рис, соус Тонкацу, зеленый лук
+              </p>
+            </div>
+            <button class="add-to-cart"><h4>В корзину</h4></button>
+          </div>
 
-    <script>
-        let canvas, ctx, speed, minCoins, gameSize, snake, direction, coins, coinImage, backgroundImage;
+          <div class="popularBlock">
+            <img src="images/mainImages/wok/terkur.jpg" />
+            <div>
+              <h2>Терияки с курицей</h2>
+              <div class="priceBlock">
+                <h3 class="price">259₽</h3>
+                <p>280 г</p>
+              </div>
+              <p class="description">
+                Рис, куриное филе, морковь, перец болгарский, цукини
+              </p>
+            </div>
+            <button class="add-to-cart"><h4>В корзину</h4></button>
+          </div>
+          <div class="popularBlock">
+            <img src="images/mainImages/roles/lavaf.jpg" />
+            <div>
+              <h2>Ролл Лава Фурай</h2>
+              <div class="priceBlock">
+                <h3 class="price">349₽</h3>
+                <p>240 г</p>
+              </div>
+              <p class="description">
+                Рис, тигровые креветки, творожный сыр, соус «лава»
+              </p>
+            </div>
+            <button class="add-to-cart"><h4>В корзину</h4></button>
+          </div>
+          <!-- Пустой блок для отступа -->
+          <div
+            class="popularBlockHidden"
+            style="visibility: hidden; width: 1px"
+          ></div>
+        </div>
+      </section>
 
-        function startGame() {
-            speed = parseInt(document.getElementById('speed').value);
-            minCoins = parseInt(document.getElementById('coins').value);
-            gameSize = parseInt(document.getElementById('size').value);
+      <section class="menu">
+        <div class="title">
+          <h2>Меню</h2>
+        </div>
+        <section style="width: 89%">
+          <div class="menucard">
+            <div class="category" id="wokButton">Воки</div>
+            <div class="category" id="saladsButton">Салаты</div>
+            <div class="category" id="rolesButton">Роллы</div>
+            <div class="category" id="soupesButton">Супы</div>
+            <!-- Кнопка для Супов -->
+          </div>
+        </section>
+        <section class="wok">
+          <section class="menuBlocks">
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/gov.jpg" />
+              <div>
+                <h2>Терияки с говядиной</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">269₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Говядина, пшеничная лапша, фасоль стручковая, перец
+                  болгарский, соус терияки
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            canvas = document.getElementById('gameCanvas');
-            ctx = canvas.getContext('2d');
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/karb.jpg" />
+              <div>
+                <h2>Карбонар</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">269₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Лапша, бекон, грибы шампиньоны, сливки, соевый соус, зеленый
+                  лук
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            canvas.width = gameSize;
-            canvas.height = gameSize;
-            canvas.style.display = 'block';
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/sliv.jpg" />
+              <div>
+                <h2>Сливочный</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">269₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Пшеничная лапша, курица, грибы шампиньоны, сливки
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            document.getElementById('menu').style.display = 'none';
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/svin.jpg" />
+              <div>
+                <h2>Со свининой и ананасами</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">259₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Пшеничная лапша, свинина, ананас, имбриь, соус Чили
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            coinImage = new Image();
-            coinImage.src = 'photo/coin.png';
-            backgroundImage = new Image();
-            backgroundImage.src = 'photo/background.jpg';
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/terkur.jpg" />
+              <div>
+                <h2>Терияки с курицей</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">255₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Курица, пшеничная лапша, фасоль стручковая, соевый соус, соус
+                  терияки
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            let imagesLoaded = 0;
-            coinImage.onload = backgroundImage.onload = () => {
-                imagesLoaded++;
-                if (imagesLoaded === 2) {
-                    initGame();
-                }
-            };
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/udon.jpg" />
+              <div>
+                <h2>Удон с курицей</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">259₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Куриное филе, капуста пекинская, лапша пшеничная, соус чили,
+                  соус устричный
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            coinImage.onerror = backgroundImage.onerror = () => {
-                alert('Ошибка загрузки изображений. Проверьте файлы coin.png и background.jpg.');
-            };
-        }
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/tah.jpg" />
+              <div>
+                <h2>Тяхан с говядиной</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">279₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Говядина, рис, лук репчатый, соевый соус, кунжутное масло
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-        function initGame() {
-            snake = [{ x: 150, y: 150 }];
-            direction = 'RIGHT';
-            coins = generateCoins(snake);
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/tah.jpg" />
+              <div>
+                <h2>Тяхан с курицей</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">259₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Курца, рис, перец болгарский, лук репчатый, соевый соус,
+                  кунжутное масло
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            document.addEventListener('keydown', changeDirection);
+            <div class="menuBlock">
+              <img src="images/mainImages/wok/umi.jpg" />
+              <div>
+                <h2>Уми гохан</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">299₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Рис, кальмар, креветки коктейльные, яйцо куриное, перец Чили,
+                  соевый соус
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
+          </section>
+        </section>
 
-            gameLoop();
-        }
+        <section class="roles">
+          <section class="menuBlocks">
+            <div class="menuBlock">
+              <img src="images/mainImages/roles/bonito.jpg" />
+              <div>
+                <h2>Ролл эби бонито</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">309₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Рис, лист нори, сыр сливочный, креветка тигровая, соус бонито
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-        function gameLoop() {
-            setTimeout(() => {
-                updateGame();
-                drawGame();
-                gameLoop();
-            }, 1000 / speed);
-        }
+            <div class="menuBlock">
+              <img src="images/mainImages/roles/cesar.jpg" />
+              <div>
+                <h2>Ролл Цезарь</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">279₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Пшеничная лепешка, куриная грудка, помидор, помидор, пекинская
+                  капуста
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-        function generateCoins(snake) {
-            let coins = [];
-            for (let i = 0; i < minCoins; i++) {
-                coins.push(generateCoin(snake));
-            }
-            return coins;
-        }
+            <div class="menuBlock">
+              <img src="images/mainImages/roles/lavaf.jpg" />
+              <div>
+                <h2>Ролл Лава Фурай</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">349₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Ролл с начинкой из риса, тигровой креветки и творожного сыра
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-        function generateCoin(snake) {
-            let coin;
-            do {
-                coin = {
-                    x: Math.floor(Math.random() * (canvas.width / 10)) * 10,
-                    y: Math.floor(Math.random() * (canvas.height / 10)) * 10
-                };
-            } while (snake.some(segment => segment.x === coin.x && segment.y === coin.y));
-            return coin;
-        }
+            <div class="menuBlock">
+              <img src="images/mainImages/roles/laval2.jpg" />
+              <div>
+                <h2>Ролл Лава с лососем</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">359₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Ролл с начинкой из Риса , лосося и творожного сыра
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-        function changeDirection(event) {
-            const key = event.key;
+            <div class="menuBlock">
+              <img src="images/mainImages/roles/laval.jpg" />
+              <div>
+                <h2>Жареный ролл с лососем</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">369₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Ролл с начинкой из Риса, филе лосося и творожного сыра
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
+          </section>
+        </section>
 
-            if (key === 'ArrowUp' && direction !== 'DOWN') {
-                direction = 'UP';
-            } else if (key === 'ArrowDown' && direction !== 'UP') {
-                direction = 'DOWN';
-            } else if (key === 'ArrowLeft' && direction !== 'RIGHT') {
-                direction = 'LEFT';
-            } else if (key === 'ArrowRight' && direction !== 'LEFT') {
-                direction = 'RIGHT';
-            }
-        }
+        <section class="salads">
+          <section class="menuBlocks">
+            <div class="menuBlock">
+              <img src="images/mainImages/salads/cesar.jpg" />
+              <div>
+                <h2>Цезарь с курицей</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">219₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Куриная грудка, помидор, сухари, пекинская капуста, соус
+                  «Цезарь»
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-        function updateGame() {
-            const head = { ...snake[0] };
-            if (direction === 'UP') head.y -= 10;
-            if (direction === 'DOWN') head.y += 10;
-            if (direction === 'LEFT') head.x -= 10;
-            if (direction === 'RIGHT') head.x += 10;
+            <div class="menuBlock">
+              <img src="images/mainImages/salads/keysek.jpg" />
+              <div>
+                <h2>Кейсеку</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">219₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Пекинская капуста, морковь, редис, огурец, куриное филе
+                  карамелезировано
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
-                alert('Игра окончена! Вы врезались в стену.');
-                location.reload();
-            }
+            <div class="menuBlock">
+              <img src="images/mainImages/salads/schick.jpg" />
+              <div>
+                <h2>Салат Чикен</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">269₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Куриное запечное филе, пекинская капуста, помидор, красный
+                  лук, яйцо
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
+          </section>
+        </section>
 
-            if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-                alert('Игра окончена! Змейка столкнулась с собой.');
-                location.reload();
-            }
+        <section class="soupes">
+          <section class="menuBlocks">
+            <div class="menuBlock">
+              <img src="images/mainImages/soupes/ramen.jpg" />
+              <div>
+                <h2>Рамен сырный</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">269₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Сырный бульон, пшеничная лапша, запечённое куриное филе
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
 
-            snake.unshift(head);
+            <div class="menuBlock">
+              <img src="images/mainImages/soupes/tomyam.jpg" />
+              <div>
+                <h2>Том ям с курицей</h2>
+                <div class="priceBlockMenu">
+                  <h3 class="priceMenu">269₽</h3>
+                  <p>260 г</p>
+                </div>
+                <p class="descriptionMenu">
+                  Бульон, имбирь, чеснок, паста том ям, паста том кха, перец
+                  чили, лемонграсс
+                </p>
+              </div>
+              <button class="add-to-cart"><h4>В корзину</h4></button>
+            </div>
+          </section>
+        </section>
+      </section>
 
-            const coinIndex = coins.findIndex(coin => coin.x === head.x && coin.y === head.y);
-            if (coinIndex !== -1) {
-                coins.splice(coinIndex, 1);
-                coins.push(generateCoin(snake));
-            } else {
-                snake.pop();
-            }
-        }
+      <footer class="footer">
+        <div class="footerData">
+          <h3 class="footerInf">yokitoki@email.com</h3>
+          <p>О нас</p>
+          <p>Калорийность и состав</p>
+          <p>Работа</p>
+          <p>Помощь</p>
+          <h3 class="footerInf" style="margin-top: 15%">
+            ©2025 ООО “Йоки Токи”
+          </h3>
+          <h3 class="footerInf">ОГРН 1131101001954, ИНН 1101140476</h3>
+          <h3 class="footerInf">
+            63400, Томская область, г. Томск, ул. Усова, 6а
+          </h3>
+        </div>
+      </footer>
+    </main>
 
-        function drawGame() {
-            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-
-            snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? 'green' : 'lightgreen';
-                ctx.fillRect(segment.x, segment.y, 10, 10);
-            });
-
-            coins.forEach(coin => {
-                ctx.drawImage(coinImage, coin.x, coin.y, 10, 10);
-            });
-        }
-
-        function moveSnake(newDirection) {
-            if (newDirection === 'UP' && direction !== 'DOWN') direction = 'UP';
-            if (newDirection === 'DOWN' && direction !== 'UP') direction = 'DOWN';
-            if (newDirection === 'LEFT' && direction !== 'RIGHT') direction = 'LEFT';
-            if (newDirection === 'RIGHT' && direction !== 'LEFT') direction = 'RIGHT';
-        }
-    </script>
-</body>
+    <script src="src/menuscript.js"></script>
+    <script src="src/menubuttons.js"></script>
+    <script src="src/cartscript.js"></script>
+  </body>
 </html>
- ghbd
